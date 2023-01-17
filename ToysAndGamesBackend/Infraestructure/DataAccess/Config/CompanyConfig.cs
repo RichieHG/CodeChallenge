@@ -14,7 +14,7 @@ namespace Infraestructure.DataAccess.Config
         public void Configure(EntityTypeBuilder<Company> modelBuilder)
         {
             modelBuilder.Property(a => a.Id).IsRequired();
-            modelBuilder.HasAlternateKey(a => a.Id); // To set UNIQUE constraint to ID
+            modelBuilder.HasIndex(a => a.Id).IsUnique(); // To set UNIQUE constraint to ID
 
             modelBuilder.Property(a => a.Name)
                .IsRequired()
