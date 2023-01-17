@@ -1,9 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ProductsController : Controller
     {
+        private readonly IProductService _productApplication;
+
+        public ProductsController(IProductService productApplication)
+        {
+            _productApplication = productApplication;
+        }
+
         [HttpGet]
         public IActionResult GetProducts()
         {
@@ -20,6 +30,7 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult CreateProduct()
         {
+           _productApplication.CreateProduct();
             return Ok();
         }
 

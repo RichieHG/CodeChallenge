@@ -44,7 +44,25 @@ namespace TestProject
             int productId = 1;
 
             //Act
-            var response = await client.GetAsync($"/api/product/{productId}");
+            var response = await client.GetAsync($"/api/products/{productId}");
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var content = response.Content.ReadAsStringAsync().Result;
+            Assert.NotNull(content);
+            Assert.False(string.IsNullOrEmpty(content));
+        }
+
+        [Fact]
+        public async void CreateProduct()
+        {
+            //Arrange
+            var client = _webApplicationFactory.CreateDefaultClient();
+
+            //Act
+            var response = await client.PostAsync($"/api/products",null);
 
             //Assert
             Assert.NotNull(response);

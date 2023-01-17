@@ -1,3 +1,8 @@
+using Application.Interfaces;
+using Application.Services;
+using Domain.BusinessRules;
+using Domain.Entities;
+using FluentValidation;
 using Infraestructure.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +26,12 @@ namespace API
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultDataBase")
                     ));
+
+            // FluentValidations
+            builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
+
+            // Dependency Injection
+            builder.Services.AddScoped<IProductService, ProductService>();
 
             var app = builder.Build();
 
