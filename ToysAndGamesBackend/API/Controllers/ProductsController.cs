@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -28,9 +29,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct()
+        public IActionResult CreateProduct([FromBody] ProductDTO newProduct)
         {
-           _productApplication.CreateProduct();
+           _productApplication.CreateProduct(newProduct);
             return Ok();
         }
 

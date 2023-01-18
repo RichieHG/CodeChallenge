@@ -30,6 +30,9 @@ namespace API
             // FluentValidations
             builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
 
+            // Automapper
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             // Dependency Injection
             builder.Services.AddScoped<IProductService, ProductService>();
 

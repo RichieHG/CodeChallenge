@@ -1,4 +1,6 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using System;
@@ -12,26 +14,19 @@ namespace Application.Services
     public class ProductService : IProductService
     {
         private readonly IValidator<Product> _validator;
+        private readonly IMapper _mapper;
 
-        public ProductApplication(IValidator<Product> validator)
+        public ProductService(IValidator<Product> validator, IMapper mapper)
         {
             _validator = validator;
+            _mapper = mapper;
         }
 
-        public async void CreateProduct()
+        public async void CreateProduct(ProductDTO newProduct)
         {
-            var p = new Product
-            {
-                Id = 1,
-                Name = "MaxSteel",
-                Description = "MaxSteel vs Elementor",
-                AgeRestriction = 106,
-                CompanyId = 1,
-                Price = 1205.85m,
-                ImageURL = "https://www.cinepremiere.com.mx/wp-content/uploads/2020/04/Max-Steel-ranking-.jpg"
-            };
+            var product = _mapper.Map<Product>(newProduct);
 
-            var result = await _validator.ValidateAsync(p);
+            var result = await _validator.ValidateAsync(product);
             Console.WriteLine(result);
         }
     }
