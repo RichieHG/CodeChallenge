@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.DataAccess.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ToysAndGamesDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+        public ToysAndGamesDbContext(DbContextOptions<ToysAndGamesDbContext> options): base(options)
         {
                 
         }

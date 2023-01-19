@@ -2,8 +2,10 @@ using Application.Interfaces;
 using Application.Services;
 using Domain.BusinessRules;
 using Domain.Entities;
+using Domain.RepositoryInterfaces;
 using FluentValidation;
 using Infraestructure.DataAccess.Data;
+using Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace API
@@ -22,19 +24,20 @@ namespace API
             builder.Services.AddSwaggerGen();
 
             // DB Context
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddDbContext<ToysAndGamesDbContext>(options =>
                 options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultDataBase")
+                    builder.Configuration.GetConnectionString("ToysAndGamesDataBase")
                     ));
 
             // FluentValidations
-            builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
+            builder.Services.AddScoped<IValidator<Product>, ProductsValidators>();
 
             // Automapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Dependency Injection
-            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IProductsService, ProductsService>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             var app = builder.Build();
 

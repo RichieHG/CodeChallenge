@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Domain.BusinessRules
 {
-    public class ProductValidator : AbstractValidator<Product>
+    public class ProductsValidators : AbstractValidator<Product>
     {
-        public ProductValidator()
+        public ProductsValidators()
         {
             RuleFor(product => product.Price)
                 .InclusiveBetween(1,1000)

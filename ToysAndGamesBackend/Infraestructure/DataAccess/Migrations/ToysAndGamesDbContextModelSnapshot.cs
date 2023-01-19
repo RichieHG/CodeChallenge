@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infraestructure.DataAccess.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ToysAndGamesDbContext))]
+    partial class ToysAndGamesDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -40,7 +40,7 @@ namespace Infraestructure.DataAccess.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("Company");
+                    b.ToTable("Company", (string)null);
 
                     b.HasData(
                         new
@@ -92,7 +92,7 @@ namespace Infraestructure.DataAccess.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
 
                     b.HasData(
                         new

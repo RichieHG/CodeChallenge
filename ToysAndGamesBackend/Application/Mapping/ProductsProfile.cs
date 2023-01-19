@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Application.Mapping
 {
-    public class ProductProfile: Profile
+    public class ProductsProfile: Profile
     {
-        public ProductProfile()
+        public ProductsProfile()
         {
             CreateMap<ProductDTO, Product>();
             CreateMap<Product, ProductDTO>();
