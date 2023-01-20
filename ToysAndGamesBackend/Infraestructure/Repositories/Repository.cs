@@ -1,4 +1,5 @@
-﻿using Domain.RepositoryInterfaces;
+﻿using Domain.Entities;
+using Domain.RepositoryInterfaces;
 using Infraestructure.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -27,8 +28,11 @@ namespace Infraestructure.Repositories
 
         public async Task<TEntity> GetAsync(int id) => await _dbSet.FindAsync(id);
 
-        public void Update(TEntity data) => _dbSet.Update(data);
-
+        public void Update(TEntity data)
+        {
+            _dbSet.Attach(data);
+            _context.Entry(data).State = EntityState.Modified;
+        }
 
         public async Task DeleteAsync(int id)
         {

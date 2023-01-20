@@ -3,9 +3,11 @@ using Application.Services;
 using Domain.BusinessRules;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
+using Domain.UnitOfWorkInterfaces;
 using FluentValidation;
 using Infraestructure.DataAccess.Data;
 using Infraestructure.Repositories;
+using Infraestructure.UnitsOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace API
@@ -38,6 +40,7 @@ namespace API
             // Dependency Injection
             builder.Services.AddScoped<IProductsService, ProductsService>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 

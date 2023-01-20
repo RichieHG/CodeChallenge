@@ -3,6 +3,7 @@ using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
+using Domain.UnitOfWorkInterfaces;
 using FluentValidation;
 
 namespace Application.Services
@@ -11,85 +12,78 @@ namespace Application.Services
     {
         private readonly IValidator<Product> _validator;
         private readonly IMapper _mapper;
-        private readonly IRepository<Product> _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ProductsService(
             IValidator<Product> validator,
             IMapper mapper,
-            IRepository<Product> repository)
+            IUnitOfWork unitOfWork)
         {
             _validator = validator;
             _mapper = mapper;
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<ProductDTO>> Get()
         {
-            var products = await _repository.GetAsync();
-            products = Enumerable.Empty<Product>();
+            var products = await _unitOfWork.Products.GetAsync();
             return _mapper.Map<List<ProductDTO>>(products);
 
         }
 
         public async Task<ProductDTO> Get(int id)
         {
-            var product = await _repository.GetAsync(id);
-            if (product == null) throw new Exception("Item doesn't exist");
+            var product = await GetProduct(id);
             return _mapper.Map<ProductDTO>(product);
         }
 
         public async Task Add(ProductDTO product)
         {
             var newProduct = _mapper.Map<Product>(product);
-            var result = await _validator.ValidateAsync(newProduct);
-            if (!result.IsValid)
-                throw new ArgumentException(result.ToString());
+            await ValidateProduct(newProduct);
 
-            await _repository.AddAsync(newProduct);
-            try
-            {
-                await _repository.SaveAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await _unitOfWork.Products.AddAsync(newProduct);
+           
+            await _unitOfWork.SaveAsync();
+
         }
 
         public async Task Update(int id, ProductDTO product)
         {
-            try
-            {
-                if (id != product.Id) throw new Exception("Id's doesn't match");
+            if (id != product.Id) throw new ArgumentException("The id's doesn't match.");
 
-                var modifiedProduct = _mapper.Map<Product>(product);
-                var result = await _validator.ValidateAsync(modifiedProduct);
-                if (!result.IsValid)
-                    throw new ArgumentException(result.ToString());
+            var productToModify = await GetProduct(id);
 
-                _repository.Update(modifiedProduct);
+            var productWithNewValues = _mapper.Map<Product>(product);
 
-                await _repository.SaveAsync();
+            await ValidateProduct(productWithNewValues);
 
-            }
-            catch
-            {
-                throw;
-            }
+            // Merging values to save the object reference
+            _mapper.Map(productWithNewValues, productToModify);
+            _unitOfWork.Products.Update(productToModify);
+
+            await _unitOfWork.SaveAsync();
         }
+        
         public async Task Delete(int id)
         {
-            try
-            {
-                await Get(id);
-                await _repository.DeleteAsync(id);
-                await _repository.SaveAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await GetProduct(id);
+            await _unitOfWork.Products.DeleteAsync(id);
+            await _unitOfWork.Products.SaveAsync();
+        }
+        
+        private async Task<Product> GetProduct(int id)
+        {
+            var product = await _unitOfWork.Products.GetAsync(id);
+            if (product == null) throw new NullReferenceException("Could not find the requested item.");
+            return product;
         }
 
+        private async Task ValidateProduct(Product product)
+        {
+            var result = await _validator.ValidateAsync(product);
+            if (!result.IsValid)
+                throw new ArgumentException("The following fields are invalid: " +result.ToString());
+        }
     }
 }
