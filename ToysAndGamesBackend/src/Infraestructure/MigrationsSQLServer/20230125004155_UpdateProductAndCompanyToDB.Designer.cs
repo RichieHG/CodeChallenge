@@ -4,16 +4,19 @@ using Infraestructure.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infraestructure.DataAccess.Migrations
+namespace Infraestructure.MigrationsSQLServer
 {
     [DbContext(typeof(ToysAndGamesDbContext))]
-    partial class ToysAndGamesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230125004155_UpdateProductAndCompanyToDB")]
+    partial class UpdateProductAndCompanyToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,9 @@ namespace Infraestructure.DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -40,34 +41,32 @@ namespace Infraestructure.DataAccess.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("Company", (string)null);
+                    b.ToTable("Company");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("87eeb61c-8f5b-4eb7-a6f0-d699de65c9d2"),
                             Name = "Mattel"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("9995512f-3255-4468-952f-c06d9c89d656"),
                             Name = "Hasbro"
                         });
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("AgeRestriction")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasMaxLength(100)
@@ -92,14 +91,14 @@ namespace Infraestructure.DataAccess.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Product");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("1d77b12f-5cb3-4651-b1e4-be186de93286"),
                             AgeRestriction = 6,
-                            CompanyId = 1,
+                            CompanyId = new Guid("87eeb61c-8f5b-4eb7-a6f0-d699de65c9d2"),
                             Description = "MaxSteel vs Elementor",
                             ImageURL = "https://www.cinepremiere.com.mx/wp-content/uploads/2020/04/Max-Steel-ranking-.jpg",
                             Name = "MaxSteel",
@@ -107,9 +106,9 @@ namespace Infraestructure.DataAccess.Migrations
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("7fbacefc-3380-44fd-b73f-9a3f212a2f46"),
                             AgeRestriction = 10,
-                            CompanyId = 2,
+                            CompanyId = new Guid("9995512f-3255-4468-952f-c06d9c89d656"),
                             Description = "Nonopoly Marvel",
                             ImageURL = "https://phantom-elmundo.unidadeditorial.es/8faa10a4f45cce9370d6f3d9d3632ea9/crop/0x213/1198x1009/resize/640/assets/multimedia/imagenes/2020/04/16/15870484935240.jpg",
                             Name = "Monopoly",

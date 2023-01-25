@@ -9,7 +9,7 @@ namespace Application.DTOs
 {
     public class ProductDTO
     {
-        public int? Id { get; set; }
+        public Guid? Id { get; set; }
         [Required]
         [StringLength(maximumLength:50, MinimumLength = 2)]
         public string? Name { get; set; }
@@ -22,6 +22,6 @@ namespace Application.DTOs
         public decimal? Price { get; set; }
         public string? ImageURL { get; set; }
         [Required]
-        public int? CompanyId { get; set; }
+        public Guid? CompanyId { get; set; }
     }
 }

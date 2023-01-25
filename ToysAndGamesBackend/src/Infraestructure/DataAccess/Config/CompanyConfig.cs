@@ -20,18 +20,18 @@ namespace Infraestructure.DataAccess.Config
                .IsRequired()
                .HasMaxLength(50);
 
-            modelBuilder.HasData(
-                   new Company
-                   {
-                       Id = 1,
-                       Name = "Mattel"
-                   },
-                   new Company
-                   {
-                       Id = 2,
-                       Name = "Hasbro"
-                   }
-            );
+            modelBuilder
+                .HasData(
+                    new Company
+                    {
+                        Id = Guid.Parse("87EEB61C-8F5B-4EB7-A6F0-D699DE65C9D2"),
+                        Name = "Mattel"
+                    },
+                    new Company
+                    {
+                        Id = Guid.Parse("9995512F-3255-4468-952F-C06D9C89D656"),
+                        Name = "Hasbro"
+                    });
         }
     }
 }

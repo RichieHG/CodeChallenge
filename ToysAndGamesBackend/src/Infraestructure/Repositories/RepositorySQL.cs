@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class RepositorySQL<TEntity> : IRepositorySQL<TEntity> where TEntity : class
     {
         private readonly ToysAndGamesDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
 
-        public Repository(ToysAndGamesDbContext context)
+        public RepositorySQL(ToysAndGamesDbContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
@@ -26,7 +26,7 @@ namespace Infraestructure.Repositories
 
         public async Task<IEnumerable<TEntity>> GetAsync() => await _dbSet.ToListAsync();
 
-        public async Task<TEntity> GetAsync(int id) => await _dbSet.FindAsync(id);
+        public async Task<TEntity> GetAsync(Guid id) => await _dbSet.FindAsync(id);
 
         public void Update(TEntity data)
         {
@@ -34,7 +34,7 @@ namespace Infraestructure.Repositories
             _context.Entry(data).State = EntityState.Modified;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var dataToDelete = await _dbSet.FindAsync(id);
             _dbSet.Remove(dataToDelete);

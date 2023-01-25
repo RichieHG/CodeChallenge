@@ -11,9 +11,9 @@ namespace Infraestructure.DataAccess.Data
 {
     public class ToysAndGamesDbContext : DbContext
     {
-        public ToysAndGamesDbContext(DbContextOptions<ToysAndGamesDbContext> options): base(options)
+        public ToysAndGamesDbContext(DbContextOptions<ToysAndGamesDbContext> options) : base(options)
         {
-                
+
         }
 
         public DbSet<Company> Company { get; set; }

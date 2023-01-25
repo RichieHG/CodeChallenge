@@ -25,11 +25,26 @@ namespace API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // DB Context
+            // DB Context SQL Server
             builder.Services.AddDbContext<ToysAndGamesDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("ToysAndGamesDataBase")
                     ));
+
+            // DB Context Cosmos
+            var toysAndGamesCosmosOptions = 
+                new DbContextOptionsBuilder<ToysAndGamesCosmosDbContext>()
+                .UseCosmos(
+                    builder.Configuration.GetConnectionString("ToysAndGamesDataBaseCosmosDB"),
+                    builder.Configuration["CosmosDBNames:ToysAndGames"]
+                    );
+            builder.Services.AddDbContext<ToysAndGamesCosmosDbContext>(options =>
+                options.UseCosmos(
+                    builder.Configuration.GetConnectionString("ToysAndGamesDataBaseCosmosDB"),
+                    builder.Configuration["CosmosDBNames:ToysAndGames"]
+                    ));
+
+            ToysAndGamesCosmosDbContext.CheckAndSeedDatabaseAsync(toysAndGamesCosmosOptions.Options);
 
             // FluentValidations
             builder.Services.AddScoped<IValidator<Product>, ProductsValidators>();
@@ -39,8 +54,10 @@ namespace API
 
             // Dependency Injection
             builder.Services.AddScoped<IProductsService, ProductsService>();
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped(typeof(IRepositorySQL<>), typeof(RepositorySQL<>));
+            builder.Services.AddScoped(typeof(IRepositoryCosmosDB<>), typeof(RepositoryCosmosDB<>));
+            builder.Services.AddScoped<IUnitOfWorkSQL, UnitOfWorkSQL>();
+            builder.Services.AddScoped<IUnitOfWorkCosmosDB, UnitOfWorkCosmosDB>();
 
             var app = builder.Build();
 

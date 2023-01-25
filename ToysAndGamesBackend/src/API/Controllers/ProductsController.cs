@@ -23,7 +23,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> GetProduct([FromRoute] int id)
+        public async Task<IActionResult> GetProduct([FromRoute] Guid id)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] ProductDTO product)
+        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] ProductDTO product)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace API.Controllers
             
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> DeleteProudct([FromRoute] int id)
+        public async Task<IActionResult> DeleteProudct([FromRoute] Guid id)
         {
             try
             {

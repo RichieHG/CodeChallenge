@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Domain.RepositoryInterfaces
 {
-    public interface IRepository<TEntity>
+    public interface IRepositoryCosmosDB<TEntity>
     {
         Task<IEnumerable<TEntity>> GetAsync();
-        Task<TEntity> GetAsync(int id);
+        Task<TEntity> GetAsync(Guid id);
         Task AddAsync(TEntity data);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
         void Update(TEntity data);
         Task SaveAsync();
 

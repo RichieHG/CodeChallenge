@@ -11,8 +11,8 @@ namespace Application.Interfaces
     {
         Task Add(ProductDTO product);
         Task<IEnumerable<ProductDTO>> Get();
-        Task<ProductDTO> Get(int id);
-        Task Delete(int id);
-        Task Update(int id, ProductDTO product);
+        Task<ProductDTO> Get(Guid id);
+        Task Delete(Guid id);
+        Task Update(Guid id, ProductDTO product);
     }
 }

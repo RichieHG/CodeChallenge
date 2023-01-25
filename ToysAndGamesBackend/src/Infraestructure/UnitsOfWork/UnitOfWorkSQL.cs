@@ -6,19 +6,19 @@ using Infraestructure.Repositories;
 
 namespace Infraestructure.UnitsOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWorkSQL : IUnitOfWorkSQL
     {
         private readonly ToysAndGamesDbContext _context;
-        public IRepository<Product> _products;
+        public IRepositorySQL<Product> _products;
 
-        public IRepository<Product> Products
+        public IRepositorySQL<Product> Products
         {
             get { 
-                return _products ?? new Repository<Product>(_context); 
+                return _products ?? new RepositorySQL<Product>(_context); 
             }
         }
 
-        public UnitOfWork(ToysAndGamesDbContext context)
+        public UnitOfWorkSQL(ToysAndGamesDbContext context)
         {
             _context = context;
         }

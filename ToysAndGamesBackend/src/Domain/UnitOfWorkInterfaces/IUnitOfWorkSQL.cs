@@ -3,9 +3,9 @@ using Domain.RepositoryInterfaces;
 
 namespace Domain.UnitOfWorkInterfaces
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWorkSQL
     {
-        public IRepository<Product> Products { get; }
+        public IRepositorySQL<Product> Products { get; }
 
         public Task SaveAsync();
     }

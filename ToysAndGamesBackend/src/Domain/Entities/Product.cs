@@ -8,13 +8,13 @@ namespace Domain.Entities
 {
     public class Product
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
         public string? Description { get; set; }
         public int? AgeRestriction { get; set; }
         public decimal Price { get; set; }
         public string? ImageURL { get; set; }
-        public int CompanyId { get; set; }
+        public Guid CompanyId { get; set; }
         public Company Company { get; set; }
     }
 }

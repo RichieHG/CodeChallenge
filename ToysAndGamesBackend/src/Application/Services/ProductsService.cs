@@ -12,26 +12,29 @@ namespace Application.Services
     {
         private readonly IValidator<Product> _validator;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWorkSQL _unitOfWorkSQL;
+        private readonly IUnitOfWorkCosmosDB _unitOfWorkCosmosDB;
 
         public ProductsService(
             IValidator<Product> validator,
             IMapper mapper,
-            IUnitOfWork unitOfWork)
+            IUnitOfWorkSQL unitOfWork,
+            IUnitOfWorkCosmosDB unitOfWorkCosmosDB)
         {
             _validator = validator;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
+            _unitOfWorkSQL = unitOfWork;
+            _unitOfWorkCosmosDB = unitOfWorkCosmosDB;
         }
 
         public async Task<IEnumerable<ProductDTO>> Get()
         {
-            var products = await _unitOfWork.Products.GetAsync();
+            var products = await _unitOfWorkCosmosDB.Products.GetAsync();
             return _mapper.Map<List<ProductDTO>>(products);
 
         }
 
-        public async Task<ProductDTO> Get(int id)
+        public async Task<ProductDTO> Get(Guid id)
         {
             var product = await GetProduct(id);
             return _mapper.Map<ProductDTO>(product);
@@ -42,13 +45,13 @@ namespace Application.Services
             var newProduct = _mapper.Map<Product>(product);
             await ValidateProduct(newProduct);
 
-            await _unitOfWork.Products.AddAsync(newProduct);
+            await _unitOfWorkSQL.Products.AddAsync(newProduct);
            
-            await _unitOfWork.SaveAsync();
+            await _unitOfWorkSQL.SaveAsync();
 
         }
 
-        public async Task Update(int id, ProductDTO product)
+        public async Task Update(Guid id, ProductDTO product)
         {
             if (id != product.Id) throw new ArgumentException("The id's doesn't match.");
 
@@ -60,21 +63,21 @@ namespace Application.Services
 
             // Merging values to save the object reference
             _mapper.Map(productWithNewValues, productToModify);
-            _unitOfWork.Products.Update(productToModify);
+            _unitOfWorkSQL.Products.Update(productToModify);
 
-            await _unitOfWork.SaveAsync();
+            await _unitOfWorkSQL.SaveAsync();
         }
         
-        public async Task Delete(int id)
+        public async Task Delete(Guid id)
         {
             await GetProduct(id);
-            await _unitOfWork.Products.DeleteAsync(id);
-            await _unitOfWork.Products.SaveAsync();
+            await _unitOfWorkSQL.Products.DeleteAsync(id);
+            await _unitOfWorkSQL.Products.SaveAsync();
         }
         
-        private async Task<Product> GetProduct(int id)
+        private async Task<Product> GetProduct(Guid id)
         {
-            var product = await _unitOfWork.Products.GetAsync(id);
+            var product = await _unitOfWorkCosmosDB.Products.GetAsync(id);
             if (product == null) throw new NullReferenceException("Could not find the requested item.");
             return product;
         }
