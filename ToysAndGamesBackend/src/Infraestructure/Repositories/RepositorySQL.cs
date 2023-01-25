@@ -22,7 +22,7 @@ namespace Infraestructure.Repositories
             _dbSet = context.Set<TEntity>();
         }
 
-        public async Task AddAsync(TEntity data) => await _dbSet.AddAsync(data);
+        public async Task<EntityEntry> AddAsync(TEntity data) => await _dbSet.AddAsync(data);
 
         public async Task<IEnumerable<TEntity>> GetAsync() => await _dbSet.ToListAsync();
 

@@ -45,9 +45,8 @@ namespace Application.Services
             var newProduct = _mapper.Map<Product>(product);
             await ValidateProduct(newProduct);
 
-            await _unitOfWorkSQL.Products.AddAsync(newProduct);
-           
-            await _unitOfWorkSQL.SaveAsync();
+            await _unitOfWorkCosmosDB.Products.AddAsync(newProduct);
+            await _unitOfWorkCosmosDB.SaveAsync();
 
         }
 
@@ -63,16 +62,16 @@ namespace Application.Services
 
             // Merging values to save the object reference
             _mapper.Map(productWithNewValues, productToModify);
-            _unitOfWorkSQL.Products.Update(productToModify);
+            _unitOfWorkCosmosDB.Products.Update(productToModify);
 
-            await _unitOfWorkSQL.SaveAsync();
+            await _unitOfWorkCosmosDB.SaveAsync();
         }
         
         public async Task Delete(Guid id)
         {
             await GetProduct(id);
-            await _unitOfWorkSQL.Products.DeleteAsync(id);
-            await _unitOfWorkSQL.Products.SaveAsync();
+            await _unitOfWorkCosmosDB.Products.DeleteAsync(id);
+            await _unitOfWorkCosmosDB.Products.SaveAsync();
         }
         
         private async Task<Product> GetProduct(Guid id)
