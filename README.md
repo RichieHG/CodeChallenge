@@ -1,6 +1,8 @@
 # CodeChallenge
 In this repo I will publish my code to my Unosquare CodeChallenge
 
+To run RabbitMQ you will need to open a terminal in the folder "ToysAndGamesBackend" and execute the command ```docker compose up -d```. This will create all containers needed, in which ones is RabbitMQ.
+
 ## Repository Pattern
 This pattern allow us reuse a single file to Connect to our DB, it means, this pattern use define a unique Process using Generics
 
@@ -31,3 +33,7 @@ This type sends the messages to the binding which has all the headers configured
 
 #### Fanout
 This type publish the message to all bindings, and it doesn't matter anything else.
+
+### DeadLetter
+This kind of elements has the objective to catch all failures in our communications
+

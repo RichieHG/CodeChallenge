@@ -1,0 +1,11 @@
+version: "3.9"
+services: 
+  rabbitmq:
+    image: rabbitmq:3.8.34-management-alpine #Management version needed to be able to have a UI
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./tools/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./tools/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
