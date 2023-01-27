@@ -1,4 +1,6 @@
-﻿using Domain.MessagesBrokerInterfaces;
+﻿using Domain.AggregatedModels;
+using Domain.MessagesBrokerInterfaces;
+using Domain.Serializer;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using System;
@@ -14,7 +16,10 @@ namespace Infraestructure.MessagesBroker
     {
         private readonly ConnectionFactory _connectionFactory;
         private readonly IConfiguration _configuration;
-        public RabbitMQPublisher(IConfiguration configuration)
+        private readonly ISerializer _serializer;
+        public RabbitMQPublisher(
+            IConfiguration configuration,
+            ISerializer serializer)
         {
             _configuration = configuration;
             _connectionFactory = new ConnectionFactory()
@@ -23,16 +28,19 @@ namespace Infraestructure.MessagesBroker
                 UserName = _configuration["RabbitMQ:User"],
                 Password = _configuration["RabbitMQ:Pass"]
             };
+            _serializer = serializer;
         }
 
-        public Task PublishMessage(byte[] message,string? exchange,string? routingKey)
+        public Task PublishMessage<T>(Message<T> message,string? exchange,string? routingKey)
         {
             using IConnection connection = _connectionFactory.CreateConnection();
             using IModel channel = connection.CreateModel();
+            byte[] body = _serializer.SerializeToByteArray(message);
+
             channel.BasicPublish(exchange: exchange ?? "",
                                      routingKey: routingKey ?? "",
                                      basicProperties: null,
-                                     body: message);
+                                     body: body);
             return Task.CompletedTask;
         }
     }

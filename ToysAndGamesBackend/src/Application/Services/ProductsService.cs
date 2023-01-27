@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using Domain.AggregatedModels;
 using Domain.Entities;
 using Domain.MessagesBrokerInterfaces;
 using Domain.Serializer;
@@ -16,22 +17,18 @@ namespace Application.Services
         private readonly IUnitOfWorkSQL _unitOfWorkSQL;
         private readonly IUnitOfWorkCosmosDB _unitOfWorkCosmosDB;
         private readonly IPublisher _publisher;
-        private readonly ISerializer _serializer;
-
         public ProductsService(
             IValidator<Product> validator,
             IMapper mapper,
             IUnitOfWorkSQL unitOfWork,
             IUnitOfWorkCosmosDB unitOfWorkCosmosDB,
-            IPublisher publisher,
-            ISerializer serializer)
+            IPublisher publisher)
         {
             _validator = validator;
             _mapper = mapper;
             _unitOfWorkSQL = unitOfWork;
             _unitOfWorkCosmosDB = unitOfWorkCosmosDB;
             _publisher = publisher;
-            _serializer = serializer;
         }
 
         public async Task<IEnumerable<ProductDTO>> Get()
@@ -56,7 +53,7 @@ namespace Application.Services
             await _unitOfWorkSQL.SaveAsync();
 
             _publisher.PublishMessage(
-                _serializer.SerializeToByteArray<Product>(createdProduct),
+                CreateMessage<Product>(createdProduct,"Create"),
                 "api.public.exchange",
                 "subscription");
         }
@@ -73,21 +70,31 @@ namespace Application.Services
 
             // Merging values to save the object reference
             _mapper.Map(productWithNewValues, productToModify);
-            _unitOfWorkCosmosDB.Products.Update(productToModify);
+            Product modifiedProduct = (Product) _unitOfWorkSQL.Products.Update(productToModify).Entity;
 
-            await _unitOfWorkCosmosDB.SaveAsync();
+            await _unitOfWorkSQL.SaveAsync();
+
+            _publisher.PublishMessage(
+                 CreateMessage<Product>(modifiedProduct, "Update"),
+                "api.public.exchange",
+                "subscription");
         }
         
         public async Task Delete(Guid id)
         {
             await GetProduct(id);
-            await _unitOfWorkCosmosDB.Products.DeleteAsync(id);
-            await _unitOfWorkCosmosDB.Products.SaveAsync();
+            Product deletedProduct =(Product) (await _unitOfWorkSQL.Products.DeleteAsync(id)).Entity;
+            await _unitOfWorkSQL.Products.SaveAsync();
+
+            _publisher.PublishMessage(
+                CreateMessage<Product>(deletedProduct, "Delete"),
+                "api.public.exchange",
+                "subscription");
         }
         
         private async Task<Product> GetProduct(Guid id)
         {
-            var product = await _unitOfWorkCosmosDB.Products.GetAsync(id);
+            var product = await _unitOfWorkSQL.Products.GetAsync(id);
             if (product == null) throw new NullReferenceException("Could not find the requested item.");
             return product;
         }
@@ -98,5 +105,11 @@ namespace Application.Services
             if (!result.IsValid)
                 throw new ArgumentException("The following fields are invalid: " +result.ToString());
         }
+
+        private Message<T> CreateMessage<T>(T content, string type)
+        {
+            return new Message<T> { Type = type, Content = content };
+        }
+
     }
 }
