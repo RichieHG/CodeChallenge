@@ -12,8 +12,8 @@ namespace Domain.RepositoryInterfaces
         Task<IEnumerable<TEntity>> GetAsync();
         Task<TEntity> GetAsync(Guid id);
         Task<EntityEntry> AddAsync(TEntity data);
-        Task DeleteAsync(Guid id);
-        void Update(TEntity data);
+        Task<EntityEntry> DeleteAsync(Guid id);
+        EntityEntry Update(TEntity data);
         Task SaveAsync();
 
     }

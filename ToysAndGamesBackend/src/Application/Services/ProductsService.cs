@@ -2,7 +2,8 @@
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using Domain.RepositoryInterfaces;
+using Domain.MessagesBrokerInterfaces;
+using Domain.Serializer;
 using Domain.UnitOfWorkInterfaces;
 using FluentValidation;
 
@@ -14,17 +15,23 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWorkSQL _unitOfWorkSQL;
         private readonly IUnitOfWorkCosmosDB _unitOfWorkCosmosDB;
+        private readonly IPublisher _publisher;
+        private readonly ISerializer _serializer;
 
         public ProductsService(
             IValidator<Product> validator,
             IMapper mapper,
             IUnitOfWorkSQL unitOfWork,
-            IUnitOfWorkCosmosDB unitOfWorkCosmosDB)
+            IUnitOfWorkCosmosDB unitOfWorkCosmosDB,
+            IPublisher publisher,
+            ISerializer serializer)
         {
             _validator = validator;
             _mapper = mapper;
             _unitOfWorkSQL = unitOfWork;
             _unitOfWorkCosmosDB = unitOfWorkCosmosDB;
+            _publisher = publisher;
+            _serializer = serializer;
         }
 
         public async Task<IEnumerable<ProductDTO>> Get()
@@ -45,9 +52,13 @@ namespace Application.Services
             var newProduct = _mapper.Map<Product>(product);
             await ValidateProduct(newProduct);
 
-            await _unitOfWorkCosmosDB.Products.AddAsync(newProduct);
-            await _unitOfWorkCosmosDB.SaveAsync();
+            Product createdProduct = (Product) (await _unitOfWorkSQL.Products.AddAsync(newProduct)).Entity;
+            await _unitOfWorkSQL.SaveAsync();
 
+            _publisher.PublishMessage(
+                _serializer.SerializeToByteArray<Product>(createdProduct),
+                "api.public.exchange",
+                "subscription");
         }
 
         public async Task Update(Guid id, ProductDTO product)

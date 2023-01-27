@@ -28,16 +28,12 @@ namespace Infraestructure.Repositories
 
         public async Task<TEntity> GetAsync(Guid id) => await _dbSet.FindAsync(id);
 
-        public void Update(TEntity data)
-        {
-            _dbSet.Attach(data);
-            _context.Entry(data).State = EntityState.Modified;
-        }
+        public EntityEntry Update(TEntity data) => _dbSet.Update(data);
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<EntityEntry> DeleteAsync(Guid id)
         {
             var dataToDelete = await _dbSet.FindAsync(id);
-            _dbSet.Remove(dataToDelete);
+            return _dbSet.Remove(dataToDelete);
         }
         public async Task SaveAsync() => await _context.SaveChangesAsync();
 
